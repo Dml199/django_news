@@ -1,16 +1,35 @@
-{% extends "default.html" %}
-{% load censor_filters %}
+{% extends 'default.html' %}
 
+{% block title %}Новости{% endblock %}
+{% load censor_filters %}
 {% block content %}
 <h1>Новости</h1>
+
 <ul>
-  {% for item in news %}
-    <li>
-      <b>{{ item.title|censor }}</b><br>
-      {{ item.pub_date }}<br>
-      {{ item.text|slice:":20"|censor }}...
-      <a href="{% url 'news_detail' item.pk %}">Читать далее</a>
-    </li>
+  {% for news in page_obj %}
+    <li><strong>{{ news.title|censor }}</strong> — {{ news.author.name }} — {{ news.created_at|date:"d.m.Y" }}</li>
+  {% empty %}
+    <li>Новостей нет.</li>
   {% endfor %}
 </ul>
+
+<div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page=1">Первая</a>
+    <a href="?page={{ page_obj.previous_page_number }}">Назад</a>
+  {% endif %}
+
+  {% for num in page_range %}
+    {% if num == page_obj.number %}
+      <strong>{{ num }}</strong>
+    {% else %}
+      <a href="?page={{ num }}">{{ num }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">Вперёд</a>
+    <a href="?page={{ total_pages }}">Последняя</a>
+  {% endif %}
+</div>
 {% endblock %}
