@@ -1,9 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
 
 
 class Author(models.Model):
-    name = models.CharField(max_length=100)
 
+    
     def __str__(self):
         return self.name
     
@@ -26,4 +29,18 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class BaseRegisterForm(UserCreationForm):
+    email = forms.EmailField(label = "Email")
+
     
+    class Meta:
+        model = User
+        fields = ('username',
+                 'first_name',
+                 'last_name',
+                 'email',
+                 'password1',
+                 'password2',
+                 )

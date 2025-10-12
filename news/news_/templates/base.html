@@ -13,7 +13,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'news_list' %}">Новости</a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
                 <span class="navbar-toggler-icon"></span>
@@ -25,7 +25,9 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'news_create' %}">Создать новость</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'article_create' %}">Создать статью</a></li>
                 </ul>
+                
             </div>
+            <a class="navbar-brand" href="{% url 'user_view' %}">Профиль</a>
         </div>
     </nav>
 
@@ -37,7 +39,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-
+      
         {% block content %}
         <!-- Основное содержимое страницы -->
         {% endblock %}

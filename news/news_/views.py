@@ -2,11 +2,15 @@
 
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView, TemplateView
 from django_filters.views import FilterView
 from django.shortcuts import render, get_object_or_404
-from .models import News, Article
+from .models import News, Article, BaseRegisterForm
 from .templatetags.filters import NewsFilter
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+
 
 def news_list(request):
     news = News.objects.order_by('-pub_date')
@@ -89,3 +93,29 @@ class ArticleDetailView(DetailView):
     model = Article
     template_name = 'articles/article_detail.html'  # создайте этот шаблон
     context_object_name = 'article'
+    
+    
+class BaseView(TemplateView):
+    template_name = 'base.html'
+    
+    
+class UserUpdateView(UpdateView,LoginRequiredMixin):
+    
+    model = User
+    template_name = 'profile_template/profile_view.html'
+    
+    
+    
+    
+class LoginView(DetailView):
+    
+    template_name = 'login.html'
+    
+    
+class RegisterView(CreateView):
+    form_class = BaseRegisterForm
+    model = User
+    success_url = '/'
+    template_name = 'acc_forms/register.html'
+    
+    
