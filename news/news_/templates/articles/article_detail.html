@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load censor_filters %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+  <h1>{{ article.title }}</h1>
+  <p><strong>Автор:</strong> {{ article.author.name }}</p>
+  <div>
+    {{ article.content|censor }}
+  </div>
+  <a href="{% url 'articles_list' %}">Вернуться к списку статей</a>
+{% endblock %}

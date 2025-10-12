@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load censor_filters %}
+{% block title %}
+  {% if object %}Редактировать статью{% else %}Создать статью{% endif %}
+{% endblock %}
+
+{% block content %}
+  <h1>{% if object %}Редактировать статью{% else %}Создать статью{% endif %}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary">
+      {% if object %}Сохранить изменения{% else %}Создать{% endif %}
+    </button>
+    <a href="{% url 'articles_list' %}" class="btn btn-secondary">Отмена</a>
+  </form>
+{% endblock %}
