@@ -1,5 +1,14 @@
 {% extends 'base.html'%}
 
-{%block content % }
+{% block content %}
+<h4>Change profile data:</h4>
+<form method = 'post' action = "{%url 'user_view'%}">
+{% csrf_token %}
+
+{{form.as_p}}
+<button type="submit">Submit</button>
+</form>
+
+<a href = "">Become an author!</a>
 
 {% endblock %}

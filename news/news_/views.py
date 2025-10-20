@@ -9,7 +9,8 @@ from django.shortcuts import render, get_object_or_404
 from .models import News, Article, BaseRegisterForm
 from .templatetags.filters import NewsFilter
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
+from django.contrib.auth.views import LoginView,LogoutView
 
 
 def news_list(request):
@@ -47,49 +48,66 @@ class NewsSearchView(FilterView):
     paginate_by = 10
 
 # CRUD для News
-class NewsCreateView(CreateView):
+class NewsCreateView(LoginRequiredMixin,CreateView):
     model = News
-    fields = ['title', 'content', 'author']
+    fields = ['title', 'content']
     template_name = 'news/news_form.html'
     success_url = reverse_lazy('news_list')
+    def form_valid(self,form):
+        form.instance.user = self.request.user
+        return super().form_valid(form) 
 
-class NewsUpdateView(UpdateView):
+class NewsUpdateView(LoginRequiredMixin,UpdateView):
     model = News
-    fields = ['title', 'content', 'author']
+    fields = ['title', 'content']
     template_name = 'news/news_form.html'
     success_url = reverse_lazy('news_list')
+    def form_valid(self,form):
+        form.instance.user = self.request.user
+        return super().form_valid(form) 
 
-class NewsDeleteView(DeleteView):
+class NewsDeleteView(LoginRequiredMixin,DeleteView):
     model = News
     template_name = 'news/news_confirm_delete.html'
     success_url = reverse_lazy('news_list')
+    def form_valid(self,form):
+        form.instance.user = self.request.user
+        return super().form_valid(form) 
 
 # CRUD для Article
-class ArticleCreateView(CreateView):
+class ArticleCreateView(LoginRequiredMixin, CreateView):
     model = Article
-    fields = ['title', 'content', 'author']
+    fields = ['title', 'content']
+    
     template_name = 'articles/article_form.html'
     success_url = reverse_lazy('articles_list')  # Создайте страницу списка статей
+    
+    def form_valid(self,form):
+        form.instance.user = self.request.user
+        return super().form_valid(form) 
 
 class ArticleUpdateView(UpdateView):
     model = Article
-    fields = ['title', 'content', 'author']
+    fields = ['title', 'content']
     template_name = 'articles/article_form.html'
     success_url = reverse_lazy('articles_list')
+    def form_valid(self,form):
+        form.instance.user = self.request.user
+        return super().form_valid(form) 
 
-class ArticleDeleteView(DeleteView):
+class ArticleDeleteView(LoginRequiredMixin,DeleteView):
     model = Article
     template_name = 'articles/article_confirm_delete.html'
     success_url = reverse_lazy('articles_list')
     
     
-class ArticleListView(ListView):
+class ArticleListView(LoginRequiredMixin,ListView):
     model = Article
     template_name = 'articles/articles_list.html'  # создайте этот шаблон
     context_object_name = 'articles'  # имя в шаблоне
     
     
-class ArticleDetailView(DetailView):
+class ArticleDetailView(LoginRequiredMixin, DetailView):
     model = Article
     template_name = 'articles/article_detail.html'  # создайте этот шаблон
     context_object_name = 'article'
@@ -99,22 +117,41 @@ class BaseView(TemplateView):
     template_name = 'base.html'
     
     
-class UserUpdateView(UpdateView,LoginRequiredMixin):
+class UserUpdateView(LoginRequiredMixin,UpdateView):
+    login_url = "/login/"
+    def get_object(self):
+        return self.request.user
     
+    def get_initial(self):
+        initial = super().get_initial()
+        
+        initial['password'] = ''
+        return initial
+    
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        raw_password = form.cleaned_data.get('password')
+        if raw_password:
+            user.set_password(raw_password)  # hash new password
+        else:
+            # If password is empty, keep existing password (avoid overwrite)
+            user.password = self.get_object().password
+        user.save()
+        return super().form_valid(form)
+
+    
+    fields= ["username", "password"]
+    success_url = "/"
     model = User
     template_name = 'profile_template/profile_view.html'
     
     
     
-    
-class LoginView(DetailView):
-    
-    template_name = 'login.html'
-    
-    
 class RegisterView(CreateView):
     form_class = BaseRegisterForm
+  
     model = User
+
     success_url = '/'
     template_name = 'acc_forms/register.html'
     

@@ -1,19 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
 
-class Author(models.Model):
 
-    
-    def __str__(self):
-        return self.name
-    
 class News(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()  # поле для текста новости
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)  # связь с автором
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -24,23 +19,25 @@ class News(models.Model):
 class Article(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
 
+    
 class BaseRegisterForm(UserCreationForm):
     email = forms.EmailField(label = "Email")
-
     
+    
+    def save(self, commit=True, request=None):
+     user = super(BaseRegisterForm, self).save(commit=commit)
+     common_group = Group.objects.get(name='common')
+     common_group.user_set.add(user)
+     return user
+        
     class Meta:
-        model = User
-        fields = ('username',
-                 'first_name',
-                 'last_name',
-                 'email',
-                 'password1',
-                 'password2',
-                 )
+     model = User
+     
+     fields = ("username",)

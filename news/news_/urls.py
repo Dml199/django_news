@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.urls import path,include
 
 urlpatterns = [
     path('', views.BaseView.as_view(),name = 'base_view'),
@@ -10,8 +11,10 @@ urlpatterns = [
     path('news/<int:pk>/edit/', views.NewsUpdateView.as_view(), name='news_edit'),  # /news/<pk>/edit/
     path('news/<int:pk>/delete/', views.NewsDeleteView.as_view(), name='news_delete'),  # /news/<pk>/delete/
     path('profile/', views.UserUpdateView.as_view(), name = 'user_view'),
-    path('login/', views.LoginView.as_view(), name = 'login'),
+    path('login/', views.LoginView.as_view(template_name = 'acc_forms/login.html'),  name = 'login'),
+    path('logout/', views.LogoutView.as_view(template_name = 'acc_forms/logout.html'), name = 'logout'),
     path('register/',views.RegisterView.as_view(),name = 'signup'),
+    path('accounts/',include('allauth.urls')),
 
     # Статьи
     path('articles/', views.ArticleListView.as_view(), name='articles_list'),
