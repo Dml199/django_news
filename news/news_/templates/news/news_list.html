@@ -7,7 +7,7 @@
 
 <ul>
   {% for news in page_obj %}
-    <li><strong>{{ news.title|censor }}</strong> — {{ news.author.name }} — {{ news.created_at|date:"d.m.Y" }}</li>
+    <li><strong>{{ news.title|censor }}</strong> — {{ news.user.username }} — {{ news.created_at|date:"d.m.Y" }}</li>
   {% empty %}
     <li>Новостей нет.</li>
   {% endfor %}

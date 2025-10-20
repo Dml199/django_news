@@ -3,10 +3,10 @@
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView, TemplateView
+from django.views.generic import CreateView, UpdateView, DeleteView, DetailView, TemplateView
 from django_filters.views import FilterView
 from django.shortcuts import render, get_object_or_404
-from .models import News, Article, BaseRegisterForm
+from .models import News, BaseRegisterForm
 from .templatetags.filters import NewsFilter
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User,Group
@@ -52,7 +52,7 @@ class NewsCreateView(LoginRequiredMixin,CreateView):
     model = News
     fields = ['title', 'content']
     template_name = 'news/news_form.html'
-    success_url = reverse_lazy('news_list')
+    success_url = reverse_lazy('post_list')
     def form_valid(self,form):
         form.instance.user = self.request.user
         return super().form_valid(form) 
@@ -61,7 +61,7 @@ class NewsUpdateView(LoginRequiredMixin,UpdateView):
     model = News
     fields = ['title', 'content']
     template_name = 'news/news_form.html'
-    success_url = reverse_lazy('news_list')
+    success_url = reverse_lazy('post_list')
     def form_valid(self,form):
         form.instance.user = self.request.user
         return super().form_valid(form) 
@@ -69,49 +69,16 @@ class NewsUpdateView(LoginRequiredMixin,UpdateView):
 class NewsDeleteView(LoginRequiredMixin,DeleteView):
     model = News
     template_name = 'news/news_confirm_delete.html'
-    success_url = reverse_lazy('news_list')
+    success_url = reverse_lazy('post_list')
     def form_valid(self,form):
         form.instance.user = self.request.user
         return super().form_valid(form) 
-
-# CRUD для Article
-class ArticleCreateView(LoginRequiredMixin, CreateView):
-    model = Article
-    fields = ['title', 'content']
     
-    template_name = 'articles/article_form.html'
-    success_url = reverse_lazy('articles_list')  # Создайте страницу списка статей
-    
-    def form_valid(self,form):
-        form.instance.user = self.request.user
-        return super().form_valid(form) 
-
-class ArticleUpdateView(UpdateView):
-    model = Article
-    fields = ['title', 'content']
-    template_name = 'articles/article_form.html'
-    success_url = reverse_lazy('articles_list')
-    def form_valid(self,form):
-        form.instance.user = self.request.user
-        return super().form_valid(form) 
-
-class ArticleDeleteView(LoginRequiredMixin,DeleteView):
-    model = Article
-    template_name = 'articles/article_confirm_delete.html'
-    success_url = reverse_lazy('articles_list')
-    
-    
-class ArticleListView(LoginRequiredMixin,ListView):
-    model = Article
-    template_name = 'articles/articles_list.html'  # создайте этот шаблон
-    context_object_name = 'articles'  # имя в шаблоне
-    
-    
-class ArticleDetailView(LoginRequiredMixin, DetailView):
-    model = Article
-    template_name = 'articles/article_detail.html'  # создайте этот шаблон
+class NewsDetailView(LoginRequiredMixin, DetailView):
+    model = News
+    template_name = 'news/news_detail.html'  # создайте этот шаблон
     context_object_name = 'article'
-    
+
     
 class BaseView(TemplateView):
     template_name = 'base.html'
