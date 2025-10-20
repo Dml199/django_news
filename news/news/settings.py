@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-8+gh*u=4*cbq8m!*+mv3#mo63npyo&e+^j8h0=r=+)^wq&*&x$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'news_',
     'django_filters',
-
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.yandex',
 
    
 ]
@@ -51,7 +55,9 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware'
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
+
 
 ]
 
@@ -85,6 +91,19 @@ DATABASES = {
     }
 }
 
+SITE_ID = 1 # Or the ID of your primary site if you use django.contrib.sites
+
+ACCOUNT_EMAIL_VERIFICATION = 'optional' # Or 'mandatory' or 'none' as per your needs
+AUTHENTICATION_BACKENDS = [
+        'django.contrib.auth.backends.ModelBackend',
+        'allauth.account.auth_backends.AuthenticationBackend',
+        'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+    ]
+ACCOUNT_FORMS = {'signup': 'sign.models.BaseRegisterForm'}
+
+LOGIN_URL = '/login'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -116,7 +135,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = ""
+
+LOGIN_REDIRECT_URL = "/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

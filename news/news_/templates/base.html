@@ -27,7 +27,23 @@
                 </ul>
                 
             </div>
-            <a class="navbar-brand" href="{% url 'user_view' %}">Профиль</a>
+            {% if user.is_authenticated %}
+            <a class="navbar-brand" href="{% url 'user_view' %}">Profile</a>
+            {% endif %}
+           
+            <a href = " {% url 'signup'%}" style = "margin:10px ; text-decoration:none ; color:rgb(187, 187, 172) ;">Signup</a>
+            {% if not user.is_authenticated %}
+
+            <a href = " {% url 'login'%}" style = "margin:10px ; text-decoration:none ; color:rgb(187, 187, 172) ; ">Sign In </a>
+
+            {% endif %}
+           
+            {% if user.is_authenticated %}
+            <form method = "post" action = "{% url 'logout' %}" >
+                {% csrf_token %}
+                <button style = "border:none; background-color:rgba(0,0,0,0);margin:10px ; text-decoration:none ; color:rgb(187, 187, 172) ; ">Logout</button>
+            </form>
+            {% endif %}
         </div>
     </nav>
 
@@ -41,7 +57,7 @@
         {% endif %}
       
         {% block content %}
-        <!-- Основное содержимое страницы -->
+        <h4> Is signed in?   :  {{ user.is_authenticated }}</h4> 
         {% endblock %}
     </main>
 

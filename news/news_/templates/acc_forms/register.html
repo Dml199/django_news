@@ -1,12 +1,35 @@
 {% extends 'base.html'%}
+{% load socialaccount %}
 
 
 {% block content %}
-<form method="post">
+<form method="post" action = "{% url 'signup'%}">
 <h> Please enter following fields. </h>
 {% csrf_token %} 
 {{form.as_p}}
 
 <input type = 'submit' value = "Continue" ></input>
+<br><br>
 </form>
+
+{% get_providers as socialaccount_providers %}
+
+{% for provider in socialaccount_providers %}
+    {% if provider.id == "openid" %}
+        {% for brand in provider.get_brands %}
+          <a title="{{brand.name}}" class="{{provider.id}} {{brand.id}}" href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">{{brand.name}}</a>
+        {% endfor %}
+    {% endif %}
+    <a title="{{provider.name}}" class="{{provider.id}}" href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">Sign in via {{provider.name}}?</a>
+{% endfor %}
+
+
+
+
 {% endblock %}
+
+
+
+
+
+
