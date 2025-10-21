@@ -4,7 +4,13 @@
   <h1>Создать новость</h1>
   <form method="post">
     {% csrf_token %}
+    
     {{ form.as_p }}
+    <select name="choices">
+      {% for value, display in articles.choices %}
+        <option value="{{ value }}" >{{ display }}</option>
+      {% endfor %}
+    </select>
     <button type="submit">Сохранить</button>
   </form>
 {% endblock %}

@@ -6,7 +6,12 @@ from django.contrib.auth.forms import UserCreationForm
 
 
 class News(models.Model):
-    title = models.CharField(max_length=200)
+    News = "News"
+    Articles = "Articles"
+    title = models.CharField(max_length = 200)
+    choices = [(News,"News"),
+               (Articles,"Articles")]
+    type= models.CharField( max_length = 100,choices = choices, default= News)
     content = models.TextField()  # поле для текста новости
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

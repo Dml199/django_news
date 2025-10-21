@@ -1,10 +1,22 @@
-{% extends "default.html" %}
+{% extends "base.html" %}
 {% load censor_filters %}
-
+{% load filters %}
 {% block content %}
 
-<h1>{{ article.title|censor }}</h1>
-<p><i>{{ article.pub_date|date:"d.m.Y" }}</i></p>
-<p>{{ article.text|censor }}</p>
-<a href="{% url 'post_list' %}">Назад к списку</a>
+<h1>{{ news.title|censor }}</h1> <h4 style = "font-weight:100 ; font-size:18px"> Written by {{news.user.username}}</h4>
+<p><i>{{ news.pub_date|date:"d.m.Y" }}</i></p>
+<p>{{ news.content|censor }}</p>
+<div style = "display:flex; flex-direction:column "> 
+    <div>{% if user.is_authenticated and user == news.user and user|in_group:"authors" %}
+        <a href="{% url 'post_edit' news.pk %}">Edit</a>
+      {% endif %}
+    </div>
+    <div>
+        <a href="{% url 'post_list' %}">Назад к списку</a>
+    </div>
+    
+
+
+</div>
+
 {% endblock %}
