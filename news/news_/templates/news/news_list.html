@@ -19,7 +19,7 @@
 <div style = "display:flex ; flex-direction:column ;width:100%; align-items:center; background-color: rgba(146, 134, 118, 0.123);margin:10px; border-radius:10px">
   <h2>News:</h2>
 <ul>
-  {% for news in page_obj %}
+  {% for news in news %}
     <li><a href="{% url 'post_detail' news.pk%}" >{{ news.title|censor }}</a></strong> — {{ news.user.username }} — {{ news.created_at|date:"d.m.Y" }}</li>
   {% empty %}
     <li>No news.</li>
