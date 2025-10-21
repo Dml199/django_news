@@ -1,4 +1,4 @@
-{% extends 'default.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Поиск новостей{% endblock %}
 
@@ -12,7 +12,7 @@
 
 <ul>
   {% for news in filter.qs %}
-    <li><strong>{{ news.title }}</strong> — {{ news.author.name }} — {{ news.created_at|date:"d.m.Y" }}</li>
+    <li><strong>{{ news.title }}</strong> — {{ news.user.__username }} — {{ news.created_at|date:"d.m.Y" }}</li>
   {% empty %}
     <li>Новостей не найдено.</li>
   {% endfor %}

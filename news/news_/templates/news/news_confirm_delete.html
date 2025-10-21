@@ -6,6 +6,6 @@
   <form method="post">
     {% csrf_token %}
     <button type="submit">Да, удалить</button>
-    <a href="{% url 'news_list' %}">Отмена</a>
+    <a href="{% url 'post_list' %}">Отмена</a>
   </form>
 {% endblock %}
