@@ -26,6 +26,7 @@ def news_detail(request, pk):
 def news_list(request):
     news_qs = News.objects.order_by('-created_at')
     articles = News.objects.filter(type = "Articles")
+    news = News.objects.filter(type = "News")
     paginator = Paginator(news_qs, 10)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
@@ -41,7 +42,8 @@ def news_list(request):
         'page_obj': page_obj,
         'page_range': page_range,
         'total_pages': total,
-        'articles':articles
+        'articles':articles,
+        'news':news
     }
     return render(request, 'news/news_list.html', context)
 
