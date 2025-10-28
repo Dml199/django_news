@@ -2,15 +2,22 @@
 
 {% block content %}
   <h1>Создать новость</h1>
+  <h4>{{articles.choices}}</h4>
   <form method="post">
     {% csrf_token %}
+    <div style="display:flex; flex-direction:column">
+      <h4>Title:</h4><p>{{ form.title}}</p>
+
+    <h4>Content:</h4><h4>{{form.content}}</h4>
+  
+    <h4 style="margin:20px 20px 20px 0px">
+{{form.type}}
+    </h4>
+    </div>
     
-    {{ form.as_p }}
-    <select name="choices">
-      {% for value, display in articles.choices %}
-        <option value="{{ value }}" >{{ display }}</option>
-      {% endfor %}
-    </select>
+    
+     
+
     <button type="submit">Сохранить</button>
   </form>
 {% endblock %}

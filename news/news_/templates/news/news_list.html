@@ -5,26 +5,41 @@
 {% block content %}
 <h1>Front page</h1>
 <div style = "display:flex ; justify-content:center ; width:90% ;  margin-top:40px">
-<div style = "display:flex ; flex-direction:column ; width:100%;align-items:center; background-color: rgba(146, 134, 118, 0.123);margin:10px; border-radius:10px">
+<div style = "display:flex ; flex-direction:column ; width:100%;align-items:center; background-color: rgba(146, 134, 118, 0.123);margin:10px; border-radius:10px; padding:20px">
   <h2>Articles:</h2>
 <ul>
   {% for articles in articles %}
   <li><a  href = "{% url 'post_detail' articles.pk %}" >{{ articles.title|censor }}</a></strong> — {{ articles.user.username }} — {{ articles.created_at|date:"d.m.Y" }}</li>
+
 {% empty %}
   <li>No articles</li>
 {% endfor %}
 
 </ul>
+<form method="post" action="{% url 'subscribe_to_news_type' %}">
+  {% csrf_token %}
+  <input type="hidden" name="news_type" value="Articles">
+  
+  <button type="submit">Подписаться на Articles.</button>
+</form>
+
 </div>
-<div style = "display:flex ; flex-direction:column ;width:100%; align-items:center; background-color: rgba(146, 134, 118, 0.123);margin:10px; border-radius:10px">
+<div style = "display:flex ; flex-direction:column ;width:100%; align-items:center; background-color: rgba(146, 134, 118, 0.123);margin:10px; border-radius:10px; padding:20px">
   <h2>News:</h2>
 <ul>
   {% for news in news %}
     <li><a href="{% url 'post_detail' news.pk%}" >{{ news.title|censor }}</a></strong> — {{ news.user.username }} — {{ news.created_at|date:"d.m.Y" }}</li>
+
   {% empty %}
     <li>No news.</li>
   {% endfor %}
 </ul>
+<form method="post" action="{% url 'subscribe_to_news_type' %}">
+  {% csrf_token %}
+  <input type="hidden" name="news_type" value="News">
+  
+  <button type="submit">Подписаться на News.</button>
+</form>
 </div>
 </div>
 

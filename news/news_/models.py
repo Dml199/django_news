@@ -2,20 +2,25 @@ from django.db import models
 from django.contrib.auth.models import User,Group
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.mail import send_mail
 
-
+class Category(models.Model):
+    type = models.CharField( max_length = 100, choices = [('News','Articles')] ,default = "News")
+    
+    def __str__(self):
+        return self.type
 
 class News(models.Model):
-    News = "News"
-    Articles = "Articles"
+   
     title = models.CharField(max_length = 200)
-    choices = [(News,"News"),
-               (Articles,"Articles")]
-    type= models.CharField( max_length = 100,choices = choices, default= News)
+    type= models.ForeignKey( Category , on_delete = models.CASCADE)
     content = models.TextField()  # поле для текста новости
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    subscribers = models.ManyToManyField(User, related_name='subs', blank=True)
+    
+    
+  
     def __str__(self):
         return self.title
 
