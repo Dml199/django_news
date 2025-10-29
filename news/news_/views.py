@@ -64,7 +64,7 @@ class NewsCreateView(PermissionRequiredMixin, LoginRequiredMixin,CreateView):
     success_url = reverse_lazy('post_list')
     
     def post(self,request, *args,**kwargs):
-
+    
         news = News(
             
             user = request.user,
@@ -76,13 +76,17 @@ class NewsCreateView(PermissionRequiredMixin, LoginRequiredMixin,CreateView):
         )
         news.save()
         
-        
+       
         send_mail( 
             subject=f'{news.title} {news.user}',  # имя клиента и дата записи будут в теме для удобства
             message=f'{news.content}', 
             from_email='newACC-03@yandex.ru', # здесь указываете почту, с которой будете отправлять (об этом попозже)
-            recipient_list=['dmitrijladov396@gmail.com']  # здесь список получателей. Например, секретарь, сам врач и т. д.
+            recipient_list=[User.email for User in Category.objects.get(id = request.POST['type']).subscribers.all() ] # здесь список получателей. Например, секретарь, сам врач и т. д.
         )
+        #print(User.email for User in Category.objects.get(id = request.POST['type']).subscribers.all())
+        print([User.email for User in Category.objects.get(id = request.POST['type']).subscribers.all() ])
+  
+        
         return redirect(self.success_url)
     
     
@@ -136,6 +140,7 @@ class UserUpdateView(LoginRequiredMixin,UpdateView):
         initial = super().get_initial()
         
         initial['password'] = ''
+        initial['username'] = self.request.user.username
         return initial
     
     def form_valid(self, form):
@@ -150,7 +155,7 @@ class UserUpdateView(LoginRequiredMixin,UpdateView):
         return super().form_valid(form)
 
     
-    fields= ["username", "password"]
+    fields= ["username", "password","email"]
     success_url = "/"
     model = User
     template_name = 'profile_template/profile_view.html'
@@ -160,11 +165,13 @@ class UserUpdateView(LoginRequiredMixin,UpdateView):
 def subscribe_to_news_type(request):
     news_type = request.POST.get('news_type')
     # Находим все новости этого типа
-    print(news_type)
-    news_items = News.objects.filter(type__type=news_type)
-    for news in news_items:
-        news.subscribers.add(request.user)
+   
+    category_items = Category.objects.get(type=news_type)
+   
+    category_items.subscribers.add(request.user)
+    
     messages.success(request, f'Вы подписались на новости типа {news_type}')
+    
     return redirect('post_list')  
     
 class RegisterView(CreateView):
