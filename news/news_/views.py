@@ -11,7 +11,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User,Group
 from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 
@@ -63,33 +65,39 @@ class NewsCreateView(PermissionRequiredMixin, LoginRequiredMixin,CreateView):
     template_name = 'news/news_form.html'
     success_url = reverse_lazy('post_list')
     
-    def post(self,request, *args,**kwargs):
-    
-        news = News(
-            
-            user = request.user,
-            title = request.POST['title'],
-            content = request.POST['content'],
-            type = Category.objects.get(id = request.POST['type'])
-            
-            
-        )
-        news.save()
-        
+    def post(self, request, *args, **kwargs):
+          
+       news = News(
+        user=request.user,
+        title=request.POST['title'],
+        content=request.POST['content'],
+        type=Category.objects.get(id=request.POST['type'])
+    )
+       news.save()
+
+       subscribers = Category.objects.get(id=request.POST['type']).subscribers.all()
        
-        send_mail( 
-            subject=f'{news.title} {news.user}',  # имя клиента и дата записи будут в теме для удобства
-            message=f'{news.content}', 
-            from_email='newACC-03@yandex.ru', # здесь указываете почту, с которой будете отправлять (об этом попозже)
-            recipient_list=[User.email for User in Category.objects.get(id = request.POST['type']).subscribers.all() ] # здесь список получателей. Например, секретарь, сам врач и т. д.
+       for subscriber in subscribers:
+           print(subscriber.email)
+           html_content = render_to_string(
+            'mail_template.html',
+            {
+                "news": news,
+                "receiver_name": subscriber.username,
+                "short_content":news.content[:50] + "..."
+            }
         )
-        #print(User.email for User in Category.objects.get(id = request.POST['type']).subscribers.all())
-        print([User.email for User in Category.objects.get(id = request.POST['type']).subscribers.all() ])
-  
-        
-        return redirect(self.success_url)
-    
-    
+           body_text = f"Новость для вас, {subscriber.username}:\n\n{news.content}"
+
+           msg = EmailMultiAlternatives(
+            subject=news.title,
+            body=body_text,
+            from_email='newACC-03@yandex.ru',
+            to=[subscriber.email]
+          )
+           msg.attach_alternative(html_content, "text/html")
+           msg.send()
+       return redirect(self.success_url)
 
         
 
