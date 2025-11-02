@@ -13,8 +13,8 @@ urlpatterns = [
     path('profile/', views.UserUpdateView.as_view(), name = 'user_view'),
     path('login/', views.LoginView.as_view(template_name = 'acc_forms/login.html'),  name = 'login'),
     path('logout/', views.LogoutView.as_view(template_name = 'acc_forms/logout.html'), name = 'logout'),
-    path('register/',views.RegisterView.as_view(),name = 'signup'),
-    path('accounts/',include('allauth.urls')),
+    path('accounts/', include('allauth.urls')),
+
     path('add_author/', views.add_to_authors_group, name= 'add_author'),
     path('subscribe/', views.subscribe_to_news_type, name='subscribe_to_news_type'),
 ]

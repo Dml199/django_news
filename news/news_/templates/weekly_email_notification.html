@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif; 
+            line-height: 1.6;
+            color: #333;
+        }
+        h2 {
+            color: #1a73e8;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h2>Свежие новости в категории "{{ category }}" за последнюю неделю</h2>
+    <p>Здравствуйте!</p>
+    <p>Представляем свежие новости:</p>
+    <ul>
+        {% for news_item in news_list %}
+        <li>
+            <a href="http://localhost:8000/posts/{{ news_item.id }}/" target="_blank" rel="noopener">
+                <strong>{{ news_item.title }}</strong>
+            </a>
+            — {{ news_item.created_at|date:"d.m.Y H:i" }}
+        </li>
+        {% endfor %}
+    </ul>
+    <p>Спасибо, что остаетесь с нами!</p>
+    <p class="footer">Это письмо сформировано автоматически.</p>
+</body>
+</html>

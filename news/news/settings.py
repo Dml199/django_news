@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-8+gh*u=4*cbq8m!*+mv3#mo63npyo&e+^j8h0=r=+)^wq&*&x$
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost']
-
+DEFAULT_FROM_EMAIL = "NewACC-03@yandex.ru" 
 EMAIL_HOST = 'smtp.yandex.ru'  # адрес сервера Яндекс-почты для всех один и тот же
 EMAIL_PORT = 465  # порт smtp сервера тоже одинаковый
 EMAIL_HOST_USER = "NewACC-03"  # ваше имя пользователя, например, если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
@@ -36,22 +36,25 @@ EMAIL_USE_SSL = True  # Яндекс использует ssl, подробне�
 
 
 # Application definition
+APSCHEDULER_DATETIME_FORMAT ='N j, Y, F:s a'
+APSCHEDULER_RUN_NOW_TIMEOUT = 25
 
 INSTALLED_APPS = [
+    'django_apscheduler',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'news_',
+    'news_.apps.NewsConfig',
     'django_filters',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.yandex',
-
+ 
    
 ]
 
@@ -104,11 +107,12 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional' # Or 'mandatory' or 'none' as per your n
 AUTHENTICATION_BACKENDS = [
         'django.contrib.auth.backends.ModelBackend',
         'allauth.account.auth_backends.AuthenticationBackend',
-        'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+        
+         
+       
 
     ]
-ACCOUNT_FORMS = {'signup': 'sign.models.BaseRegisterForm'}
+
 
 LOGIN_URL = '/login'
 
@@ -135,7 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
+SITE_ID =1
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

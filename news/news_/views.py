@@ -13,6 +13,8 @@ from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
+from datetime import time, timedelta, datetime
 
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -67,18 +69,31 @@ class NewsCreateView(PermissionRequiredMixin, LoginRequiredMixin,CreateView):
     
     def post(self, request, *args, **kwargs):
           
+          
+      
        news = News(
         user=request.user,
         title=request.POST['title'],
         content=request.POST['content'],
         type=Category.objects.get(id=request.POST['type'])
-    )
-       news.save()
+    )   
+       if News.objects.filter(user = request.user).count() < 3:
+           news.save()
+       else:   
+           if timezone.make_aware(datetime.now()) - News.objects.filter(user = news.user).order_by('created_at')[2].created_at > timedelta(hours = 24):
+               
+            print("Allowed to save. Object interval is:"+ (news.created_at - News.objects.filter(user = news.user).order_by('created_at')[2] < timedelta(hours = 24)))
+            
+            news.save()
+           else: messages.error(request, f'Нельзя создать более 3х новостей за день.')
+    
+            
+       
 
        subscribers = Category.objects.get(id=request.POST['type']).subscribers.all()
        
        for subscriber in subscribers:
-           print(subscriber.email)
+          
            html_content = render_to_string(
             'mail_template.html',
             {
@@ -110,7 +125,7 @@ class NewsCreateView(PermissionRequiredMixin, LoginRequiredMixin,CreateView):
     
 
 
-class NewsUpdateView(PermissionRequiredMixin, LoginRequiredMixin,UpdateView):
+class NewsUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = News
     fields = ['title', 'content']
     permission_required = ('news_.change_news')
@@ -138,7 +153,7 @@ class NewsDetailView(LoginRequiredMixin, DetailView):
 class BaseView(TemplateView):
     template_name = 'base.html'
     
-    
+
 class UserUpdateView(LoginRequiredMixin,UpdateView):
     login_url = "/login/"
     def get_object(self):
