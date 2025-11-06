@@ -15,6 +15,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import time, timedelta, datetime
+from .tasks import notify_subs
 
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -75,16 +76,31 @@ class NewsCreateView(PermissionRequiredMixin, LoginRequiredMixin,CreateView):
         user=request.user,
         title=request.POST['title'],
         content=request.POST['content'],
-        type=Category.objects.get(id=request.POST['type'])
+        type=Category.objects.get(id=request.POST['type']),
+        
     )   
+
        if News.objects.filter(user = request.user).count() < 3:
+           
            news.save()
+           news_ = News.objects.get(title = request.POST['title'])
+
+           notify_subs.apply_async(kwargs ={"news_type":request.POST['type'], 
+                                    "news_content":news_.content,
+                                    "news_title":news_.title,
+                                    "news_id":news_.id})
+           
        else:   
            if timezone.make_aware(datetime.now()) - News.objects.filter(user = news.user).order_by('created_at')[2].created_at > timedelta(hours = 24):
                
-            print("Allowed to save. Object interval is:"+ (news.created_at - News.objects.filter(user = news.user).order_by('created_at')[2] < timedelta(hours = 24)))
-            
             news.save()
+            news_ = News.objects.get(title = request.POST['title'])
+        
+            notify_subs.apply_async(kwargs = {"news_type":request.POST['type'], 
+                                                "news_content":news_.content,
+                                                "news_title":news_.title,
+                                                "news_id":news_.id})
+           
            else: messages.error(request, f'Нельзя создать более 3х новостей за день.')
     
             
