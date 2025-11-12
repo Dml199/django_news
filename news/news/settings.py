@@ -159,7 +159,7 @@ LOGGING = {
         },
         'file_handler_error':{
             'level':'ERROR',
-            'filters': ['require_debug_false'],
+            'filters': ['require_debug_true'],
             'filename':'error.log',
             'formatter':'error+',
              'class':"logging.FileHandler",
@@ -167,7 +167,7 @@ LOGGING = {
         },
         'security_log_info':{
             'level':'INFO',
-            'filters': ['require_debug_false'],
+            'filters': ['require_debug_true'],
             'filename':'security.log',
             'formatter':'info+',
              'class':"logging.FileHandler",
