@@ -98,6 +98,121 @@ TEMPLATES = [
 WSGI_APPLICATION = 'news.wsgi.application'
 
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'style' : '{', 
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'debug':{
+            'format':'%(asctime)s %(levelname)s %(message)s '
+        },
+        'warning':{
+            'format':'%(asctime)s %(levelname)s %(message)s %(pathname)s'
+        },
+        'info+':
+            {
+            'format':'%(asctime)s %(levelname)s %(module)s %(message)s '
+        },
+
+        'error+':{
+            'format':'%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s'
+        },
+
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'console_DEBUG': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'debug'
+        },
+        'console_WARNING': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning'
+        },
+        'console_ERROR+': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'error+'
+        },
+        'file_handler_general':{
+            'level':'INFO',
+            'filters': ['require_debug_false'],
+            'filename':'general.log',
+            'formatter':'info+',
+            'class':"logging.FileHandler",
+            
+        },
+        'file_handler_error':{
+            'level':'ERROR',
+            'filters': ['require_debug_false'],
+            'filename':'error.log',
+            'formatter':'error+',
+             'class':"logging.FileHandler",
+            
+        },
+        'security_log_info':{
+            'level':'INFO',
+            'filters': ['require_debug_false'],
+            'filename':'security.log',
+            'formatter':'info+',
+             'class':"logging.FileHandler",
+            
+        },
+        
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter':'warning'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console_DEBUG','console_WARNING','console_ERROR+','file_handler_general'],
+            'propagate': True,
+        },
+        'django.server':{
+            'handlers': ['file_handler_error','mail_admins'],
+            'propagate': True,
+            },
+        'django.template':{
+            'handlers': ['file_handler_error'],
+            'propagate': True,
+            },
+        'django.db.backends':{
+            'handlers': ['file_handler_error'],
+            'propagate': True,
+            },
+                
+        'django.request': {
+            'handlers': ['file_handler_error','mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['security_log_info'],
+            'level': 'INFO',
+            'propagate': True,
+        }
+        
+    }
+}
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
